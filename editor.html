@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Portfolio | Student Portfolio Hub</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .editor-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 2rem;
+        }
+        .editor-card {
+            background: white;
+            border-radius: 24px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+        .editor-title {
+            font-size: 1.3rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+        }
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.2);
+        }
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .skills-container, .achievements-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            background: #f8fafc;
+            border-radius: 12px;
+            min-height: 60px;
+        }
+        .skill-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+        .achievement-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #fef3c7;
+            color: #92400e;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+        .remove-btn {
+            background: rgba(0,0,0,0.2);
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+        }
+        .remove-ach {
+            background: #fed7aa;
+            color: #92400e;
+        }
+        .add-section {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .add-section input {
+            flex: 1;
+            padding: 0.6rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+        }
+        .project-item {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #667eea;
+        }
+        .project-name {
+            width: 100%;
+            padding: 0.6rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        .project-desc {
+            width: 100%;
+            padding: 0.6rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            resize: vertical;
+            min-height: 60px;
+            font-family: inherit;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .message {
+            margin-top: 1rem;
+            padding: 0.8rem;
+            border-radius: 12px;
+            display: none;
+        }
+        .message.success {
+            background: #dcfce7;
+            color: #16a34a;
+            display: block;
+        }
+        .message.error {
+            background: #fee2e2;
+            color: #dc2626;
+            display: block;
+        }
+        @media (max-width: 768px) {
+            .editor-container {
+                padding: 5rem 1rem 1rem;
+            }
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="logo">✏️ Edit Portfolio</div>
+            <ul class="nav-links">
+                <li><a href="dashboard.html">🏠 My Profile</a></li>
+                <li><a href="students.html">👥 All Students</a></li>
+                <li><a href="editor.html">✏️ Edit Portfolio</a></li>
+                <li><a href="messaging.html">💬 Messages</a></li>
+                <li><span class="user-badge" id="userNameDisplay"></span></li>
+                <li><button id="logoutBtn" class="btn-logout">🚪 Logout</button></li>
+            </ul>
+            <div class="hamburger"><span></span><span></span><span></span></div>
+        </div>
+    </nav>
+    
+    <div class="editor-container">
+        <div class="editor-card">
+            <div class="editor-title">📝 Basic Information</div>
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="editFullname" class="form-input">
+            </div>
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="editUsername" class="form-input" disabled style="background:#f5f5f5;">
+            </div>
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="editEmail" class="form-input">
+            </div>
+            <div class="form-group">
+                <label>Location</label>
+                <input type="text" id="editLocation" class="form-input" placeholder="e.g., Manila, Philippines">
+            </div>
+            <div class="form-group">
+                <label>Bio / About Me</label>
+                <textarea id="editBio" class="form-textarea" placeholder="Tell us about yourself..."></textarea>
+            </div>
+        </div>
+        
+        <div class="editor-card">
+            <div class="editor-title">🛠️ Skills</div>
+            <div id="skillsList" class="skills-container"></div>
+            <div class="add-section">
+                <input type="text" id="newSkill" placeholder="Enter a skill (e.g., Python, React)">
+                <button id="addSkillBtn" class="btn-secondary">+ Add Skill</button>
+            </div>
+        </div>
+        
+        <div class="editor-card">
+            <div class="editor-title">🚀 Projects</div>
+            <div id="projectsList"></div>
+            <button id="addProjectBtn" class="btn-secondary">+ Add New Project</button>
+        </div>
+        
+        <div class="editor-card">
+            <div class="editor-title">🏆 Achievements</div>
+            <div id="achievementsList" class="achievements-container"></div>
+            <div class="add-section">
+                <input type="text" id="newAchievement" placeholder="Enter an achievement (e.g., Dean's List)">
+                <button id="addAchievementBtn" class="btn-secondary">+ Add Achievement</button>
+            </div>
+        </div>
+        
+        <div class="editor-card">
+            <div class="action-buttons">
+                <button id="saveBtn" class="btn-primary">💾 Save All Changes</button>
+                <button id="previewBtn" class="btn-secondary">👁️ Preview My Profile</button>
+            </div>
+            <div id="saveMessage" class="message"></div>
+        </div>
+    </div>
+    
+    <script>
+        const API_URL = "https://api.sheetbest.com/sheets/54f68e59-9aa4-4e67-b267-1a4241a9a9df";
+        
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (!currentUser) window.location.href = 'index.html';
+        document.getElementById('userNameDisplay').textContent = currentUser.fullname;
+        
+        let skills = [], projects = [], achievements = [];
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        async function loadUserData() {
+            try {
+                const response = await fetch(API_URL);
+                const students = await response.json();
+                const user = students.find(s => s.username === currentUser.username);
+                
+                if (user) {
+                    document.getElementById('editFullname').value = user.fullname || '';
+                    document.getElementById('editUsername').value = user.username || '';
+                    document.getElementById('editEmail').value = user.email || '';
+                    document.getElementById('editLocation').value = user.location || '';
+                    // FIXED: Use 'aboutme' instead of 'bio'
+                    document.getElementById('editBio').value = user.aboutme || user.bio || '';
+                    
+                    skills = user.skills ? user.skills.split(',').map(s => s.trim()).filter(s => s) : [];
+                    projects = user.projects ? JSON.parse(user.projects) : [];
+                    achievements = user.achievements ? user.achievements.split(',').map(a => a.trim()).filter(a => a) : [];
+                    
+                    renderSkills();
+                    renderProjects();
+                    renderAchievements();
+                }
+            } catch(e) { 
+                console.error(e); 
+                showMessage('Error loading data', 'error');
+            }
+        }
+        
+        function renderSkills() {
+            const container = document.getElementById('skillsList');
+            if (skills.length === 0) {
+                container.innerHTML = '<span style="color:#888;">No skills added yet.</span>';
+                return;
+            }
+            container.innerHTML = skills.map((s, i) => `<span class="skill-tag">${escapeHtml(s)}<button class="remove-btn" data-skill-index="${i}">✕</button></span>`).join('');
+            document.querySelectorAll('[data-skill-index]').forEach(btn => {
+                btn.onclick = () => { skills.splice(parseInt(btn.dataset.skillIndex), 1); renderSkills(); };
+            });
+        }
+        
+        function renderProjects() {
+            const container = document.getElementById('projectsList');
+            if (projects.length === 0) {
+                container.innerHTML = '<p style="color:#888;">No projects added yet.</p>';
+                return;
+            }
+            container.innerHTML = projects.map((p, i) => `
+                <div class="project-item">
+                    <input type="text" class="project-name" value="${escapeHtml(p.name)}" data-project-name="${i}" placeholder="Project Name">
+                    <textarea class="project-desc" data-project-desc="${i}" placeholder="Project Description">${escapeHtml(p.desc)}</textarea>
+                    <button class="btn-secondary" style="margin-top:0.5rem; background:#fee2e2; color:#dc2626;" data-project-del="${i}">Remove</button>
+                </div>
+            `).join('');
+            for (let i = 0; i < projects.length; i++) {
+                document.querySelector(`[data-project-name="${i}"]`).oninput = (e) => projects[i].name = e.target.value;
+                document.querySelector(`[data-project-desc="${i}"]`).oninput = (e) => projects[i].desc = e.target.value;
+                document.querySelector(`[data-project-del="${i}"]`).onclick = () => { projects.splice(i, 1); renderProjects(); };
+            }
+        }
+        
+        function renderAchievements() {
+            const container = document.getElementById('achievementsList');
+            if (achievements.length === 0) {
+                container.innerHTML = '<span style="color:#888;">No achievements added yet.</span>';
+                return;
+            }
+            container.innerHTML = achievements.map((a, i) => `<span class="achievement-tag">🏅 ${escapeHtml(a)}<button class="remove-btn remove-ach" data-ach-index="${i}">✕</button></span>`).join('');
+            document.querySelectorAll('[data-ach-index]').forEach(btn => {
+                btn.onclick = () => { achievements.splice(parseInt(btn.dataset.achIndex), 1); renderAchievements(); };
+            });
+        }
+        
+        async function savePortfolio() {
+            const fullname = document.getElementById('editFullname').value.trim();
+            const email = document.getElementById('editEmail').value.trim();
+            const location = document.getElementById('editLocation').value.trim();
+            const aboutme = document.getElementById('editBio').value.trim();
+            
+            if (!fullname || !email) {
+                showMessage('❌ Name and Email are required', 'error');
+                return;
+            }
+            
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<span class="loading-spinner"></span> Saving...';
+            
+            try {
+                const response = await fetch(API_URL);
+                const students = await response.json();
+                const userToUpdate = students.find(s => s.username === currentUser.username);
+                
+                if (userToUpdate) {
+                    // Get the row ID (SheetBest uses _id or id)
+                    const rowId = userToUpdate.id || userToUpdate._id;
+                    
+                    if (!rowId) {
+                        throw new Error('Cannot find row ID for update');
+                    }
+                    
+                    const updatedUser = {
+                        fullname: fullname,
+                        username: userToUpdate.username,
+                        email: email,
+                        password: userToUpdate.password,
+                        createdAt: userToUpdate.createdAt,
+                        avatar: userToUpdate.avatar || fullname.charAt(0).toUpperCase(),
+                        aboutme: aboutme,  // FIXED: Use 'aboutme' not 'bio'
+                        skills: skills.join(', '),
+                        projects: JSON.stringify(projects),
+                        achievements: achievements.join(', '),
+                        location: location,
+                        profilePicture: userToUpdate.profilePicture || ''
+                    };
+                    
+                    const putResponse = await fetch(`${API_URL}/${rowId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(updatedUser)
+                    });
+                    
+                    if (putResponse.ok) {
+                        currentUser.fullname = fullname;
+                        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                        showMessage('✅ Portfolio saved successfully!', 'success');
+                        setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
+                    } else {
+                        throw new Error('Save failed - Server responded with error');
+                    }
+                } else {
+                    throw new Error('User not found in database');
+                }
+            } catch(e) {
+                console.error('Save error:', e);
+                showMessage('❌ Error saving: ' + e.message, 'error');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '💾 Save All Changes';
+            }
+        }
+        
+        function showMessage(text, type) {
+            const msg = document.getElementById('saveMessage');
+            msg.textContent = text;
+            msg.className = `message ${type}`;
+            setTimeout(() => {
+                msg.style.display = 'none';
+            }, 4000);
+        }
+        
+        document.getElementById('addSkillBtn').onclick = () => {
+            const val = document.getElementById('newSkill').value.trim();
+            if (val) { skills.push(val); renderSkills(); document.getElementById('newSkill').value = ''; }
+        };
+        document.getElementById('addProjectBtn').onclick = () => {
+            projects.push({ name: 'New Project', desc: 'Description here' });
+            renderProjects();
+        };
+        document.getElementById('addAchievementBtn').onclick = () => {
+            const val = document.getElementById('newAchievement').value.trim();
+            if (val) { achievements.push(val); renderAchievements(); document.getElementById('newAchievement').value = ''; }
+        };
+        document.getElementById('saveBtn').onclick = savePortfolio;  // FIXED: Was 'savex'
+        document.getElementById('previewBtn').onclick = () => window.open(`profile.html?user=${encodeURIComponent(currentUser.username)}`, '_blank');
+        document.getElementById('logoutBtn').onclick = () => { localStorage.removeItem('currentUser'); window.location.href = 'index.html'; };
+        
+        window.addEventListener('scroll', () => document.querySelector('nav').classList.toggle('scrolled', window.scrollY > 50));
+        
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+        if (hamburger) {
+            hamburger.onclick = () => {
+                hamburger.classList.toggle('active');
+                navLinks.classList.toggle('active');
+            };
+        }
+        
+        loadUserData();
+    </script>
+</body>
+</html>

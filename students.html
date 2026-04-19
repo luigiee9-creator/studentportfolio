@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Students | Student Portfolio Hub</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .students-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 6rem 2rem 2rem;
+        }
+        .profile-pic-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 1rem;
+            border: 3px solid white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-top: 0.8rem;
+        }
+        .action-btn {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .view-profile-btn {
+            background: #e0e7ff;
+            color: #4f46e5;
+        }
+        .message-btn-sm {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="logo">👥 All Students</div>
+            <ul class="nav-links">
+                <li><a href="dashboard.html">🏠 My Profile</a></li>
+                <li><a href="students.html">👥 All Students</a></li>
+                <li><a href="editor.html">✏️ Edit Portfolio</a></li>
+                <li><a href="messaging.html">💬 Messages</a></li>
+                <li><span class="user-badge" id="userNameDisplay"></span></li>
+                <li><button id="logoutBtn" class="btn-logout">🚪 Logout</button></li>
+            </ul>
+            <div class="hamburger"><span></span><span></span><span></span></div>
+        </div>
+    </nav>
+    
+    <div class="students-container">
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search by name or username...">
+        </div>
+        <h3>👥 All Students</h3>
+        <div id="studentsGrid" class="students-grid">
+            <div style="text-align:center; padding:2rem;"><span class="loading-spinner"></span> Loading...</div>
+        </div>
+    </div>
+    
+    <script>
+        const API_URL = "https://api.sheetbest.com/sheets/54f68e59-9aa4-4e67-b267-1a4241a9a9df";
+        
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (!currentUser) window.location.href = 'index.html';
+        document.getElementById('userNameDisplay').textContent = currentUser.fullname;
+        
+        let allStudents = [];
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        async function loadStudents() {
+            const response = await fetch(API_URL);
+            allStudents = await response.json();
+            renderStudents(allStudents.filter(s => s.username !== currentUser.username));
+        }
+        
+        function renderStudents(students) {
+            const grid = document.getElementById('studentsGrid');
+            if (students.length === 0) {
+                grid.innerHTML = '<div style="text-align:center; padding:2rem;">✨ No other students found ✨</div>';
+                return;
+            }
+            grid.innerHTML = students.map(student => `
+                <div class="student-card">
+                    ${student.profilePicture && student.profilePicture.startsWith('data:')
+                        ? `<img src="${student.profilePicture}" class="profile-pic-preview">`
+                        : `<div class="student-avatar">${escapeHtml(student.avatar || student.fullname.charAt(0).toUpperCase())}</div>`
+                    }
+                    <h3>${escapeHtml(student.fullname)}</h3>
+                    <p>@${escapeHtml(student.username)}</p>
+                    <div class="action-buttons">
+                        <a href="profile.html?user=${encodeURIComponent(student.username)}" class="action-btn view-profile-btn">👤 View Profile</a>
+                        <a href="messaging.html?user=${encodeURIComponent(student.username)}" class="action-btn message-btn-sm">💬 Message</a>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function filterStudents(searchTerm) {
+            const term = searchTerm.toLowerCase();
+            const filtered = allStudents.filter(s => 
+                s.username !== currentUser.username &&
+                (s.fullname.toLowerCase().includes(term) || s.username.toLowerCase().includes(term))
+            );
+            renderStudents(filtered);
+        }
+        
+        document.getElementById('searchInput').addEventListener('input', (e) => filterStudents(e.target.value));
+        document.getElementById('logoutBtn').onclick = () => {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        };
+        
+        window.addEventListener('scroll', () => document.querySelector('nav').classList.toggle('scrolled', window.scrollY > 50));
+        
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+        if (hamburger) {
+            hamburger.onclick = () => {
+                hamburger.classList.toggle('active');
+                navLinks.classList.toggle('active');
+            };
+        }
+        
+        loadStudents();
+    </script>
+</body>
+</html>
