@@ -294,7 +294,7 @@
     <script>
         // IMPORTANT: I-replace ito ng URL ng iyong Google Apps Script Web App URL
         // Replace this with your newly deployed Web App URL
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwjDdwojanX8CXQUnlfMX4aDLWcKJhG-69q0FHn5I7ew-y18PQRujR16LSElIm4Cq4cxw/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzauMrjVRviUnh2Uq7tsBl5KA5YsFTPwzG-XX1ZOJA1tY9202jiz48Tbrlv_Tsp7_0Jug/exec";
         
 async function callApi(action, data = {}) {
     const payload = { action, ...data };
@@ -302,18 +302,19 @@ async function callApi(action, data = {}) {
     try {
         const response = await fetch(SCRIPT_URL, {
             method: 'POST',
-            // Using text/plain avoids "preflight" security checks that 
-            // often cause the 405 error on GitHub
-            headers: { 
+            mode: 'cors', // Change this to 'cors'
+            headers: {
+                // Using text/plain avoids the security "preflight" check 
+                // that usually causes the 405 error on GitHub
                 'Content-Type': 'text/plain;charset=utf-8' 
             },
             body: JSON.stringify(payload)
         });
         
-        const result = await response.json();
-        return result;
+        // This parses the response from your Google Sheet
+        return await response.json();
     } catch (error) {
-        console.error('API Error:', error);
+        console.error('Connection Error:', error);
         throw error;
     }
 }
